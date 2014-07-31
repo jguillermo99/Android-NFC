@@ -1,0 +1,44 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:orientation="vertical"
+    android:textColor="#FFFFFF" >
+
+    <TextView
+        android:id="@+id/texto_cuenta"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:hint="@string/saldo"
+        android:textColor="#000000"
+        android:textSize="40sp"
+        
+                 />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="#CCCCCC"
+        android:onClick="pagar"
+        android:text="@string/pagar"
+        android:textColor="#FFFFFF"            
+         />
+
+    <ListView
+        android:id="@+id/productos"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.62"
+        android:background="#CCCCCC"
+        android:divider="#000000"
+        android:smoothScrollbar="true"
+        android:textColor="#FFFFFF" 
+        android:padding="2dp">
+        
+    </ListView >
+    
+   
+</LinearLayout>
