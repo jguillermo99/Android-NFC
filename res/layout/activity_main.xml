@@ -27,7 +27,9 @@
         android:textColor="#FFFFFF"            
          />
 
-    <ListView
+    <ListView 
+        
+        
         android:id="@+id/productos"
         android:layout_width="match_parent"
         android:layout_height="0dp"
