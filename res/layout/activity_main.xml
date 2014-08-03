@@ -1,46 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#000000"
-    android:orientation="vertical"
-    android:textColor="#FFFFFF" >
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/texto_cuenta"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
-        android:hint="@string/saldo"
-        android:textColor="#000000"
-        android:textSize="40sp"
+        android:orientation="horizontal" >
         
-                 />
+    <TextView
+        android:id="@+id/texto_cuenta"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="4"
+        android:hint="@string/saldo"
+        android:textSize="40sp"
+        android:layout_gravity="left">
+        
+    </TextView>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:background="#CCCCCC"
+        android:layout_weight="1"
         android:onClick="pagar"
-        android:text="@string/pagar"
-        android:textColor="#FFFFFF"            
-         />
+        android:text="@string/pagar" />
+     
+     </LinearLayout>
+     
 
-    <ListView 
-        
-        
+    <ListView
         android:id="@+id/productos"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.62"
+        android:layout_height="wrap_content"
         android:background="#CCCCCC"
         android:divider="#000000"
+        android:padding="2dp"
         android:smoothScrollbar="true"
-        android:textColor="#FFFFFF" 
-        android:padding="2dp">
+        android:textColor="#FFFFFF" >
         
     </ListView >
-    
-   
 </LinearLayout>
