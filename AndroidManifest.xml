@@ -20,6 +20,7 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="com.example.pruebanfc.MainActivity"
+            android:screenOrientation="portrait"
             android:label="@string/app_name" >
            
             

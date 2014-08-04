@@ -3,13 +3,13 @@ package com.example.pruebanfc;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.StringTokenizer;
 
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentFilter.MalformedMimeTypeException;
+import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
@@ -20,33 +20,34 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.java.Producto;
+import com.java.XMLClass;
 import com.paypal.android.MEP.PayPal;
 
 /**
  * Activity for reading data from an NDEF Tag.
  * 
- * @author Ralf Wondratschek
+ * @author Juan Guillermo
  * 
  */
 public class MainActivity extends Activity {
 
 	public static final String MIME_TEXT_PLAIN = "text/plain";
 	public static final String TAG = "NfcDemo";
-	public ArrayList productos;
-	public ArrayAdapter adapter;
-	TextView saldo;
-
-	int pagar = 0;
-	// private String[] productos=new String[50];
-	ListView lista;
-
+	public ItemListAdapter adapter;
+	private ArrayList<Producto> products;
+	private TextView saldo;
+	private int pagar = 0;
+	private ListView lista;
 	private NfcAdapter mNfcAdapter;
+	private Button boton;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -54,29 +55,90 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		saldo = (TextView) findViewById(R.id.texto_cuenta);
-		saldo.setText("$ " + Integer.toString(pagar));
-		productos = new ArrayList();
-		// productos.add("Vacio");
+		// Inicializar Vista
+		this.saldo = (TextView) findViewById(R.id.texto_cuenta);
+		this.saldo.setText("$ " + Integer.toString(pagar));
 
-		adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1,
-				productos);
+		products = new ArrayList<Producto>();
+		Producto p1 = new Producto("telefono", 50000, "www.123.com");
+		p1.setCantidad(20);
+		products.add(p1);
+
+		Producto p2 = new Producto("Camara Digital", 350000, "www.123.com");
+		p2.setCantidad(5);
+		products.add(p2);
+
+		Producto p3 = new Producto("Portatil Toshiba", 1800000, "www.123.com");
+		p3.setCantidad(2);
+		products.add(p3);
+
+		Producto p4 = new Producto("Audifonos Bluetooth", 120000, "www.123.com");
+		p4.setCantidad(3);
+		products.add(p4);
+
+		Producto p5 = new Producto("Tablet Lenovo", 450000, "www.123.com");
+		p5.setCantidad(4);
+		products.add(p5);
+
+		int num = 0;
+		for (int i = 0; i < products.size(); i++) {
+			num = num
+					+ (products.get(i).getPrecio() * products.get(i)
+							.getCantidad());
+		}
+		cambiarSaldo(num);
+
+		adapter = new ItemListAdapter(this, products);
+
+		boton = (Button) findViewById(R.id.boton_pagar);
+		boton.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+
+				Toast.makeText(getApplicationContext(), "A Pagar",
+						Toast.LENGTH_LONG).show();
+				// TODO Auto-generated method stub
+
+			}
+		});
 
 		lista = (ListView) findViewById(R.id.productos);
+
 		lista.setOnItemLongClickListener(new OnItemLongClickListener() {
 
 			@Override
 			public boolean onItemLongClick(AdapterView<?> arg0, View view,
 					int pos, long arg3) {
-				productos.remove(pos);
+				products.get(pos).restarCantidad();
+				products.get(pos)
+						.sumarTotal(products.get(pos).getPrecio() * -1);
+				cambiarSaldo(products.get(pos).getPrecio() * -1);
+
+				if (products.get(pos).getCantidad() == 0)
+					products.remove(pos);
+
 				adapter.notifyDataSetChanged();
 				// TODO Auto-generated method stub
-				return false;
+				return true;
 			}
 
 		});
 
+		lista.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View view, int pos,
+					long arg3) {
+				Intent intent = null;
+				intent = new Intent(intent.ACTION_VIEW, Uri.parse(products.get(
+						pos).getUrl()));
+				startActivity(intent);
+			}
+		});
+
 		lista.setAdapter(adapter);
+		adapter.notifyDataSetChanged();
 
 		mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
@@ -241,8 +303,6 @@ public class MainActivity extends Activity {
 
 		// public static final String TAG = "NfcDemo";
 		// private TextView mTextView;
-		String articulo = "";
-		int precio = 0;
 
 		@Override
 		protected String doInBackground(Tag... params) {
@@ -275,80 +335,60 @@ public class MainActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(String result) {
+			System.out.println(result);
 
-			System.out.print("1");
 			if (result != null) {
-				System.out.print(result);
 				Toast.makeText(getApplicationContext(), result,
 						Toast.LENGTH_LONG).show();
-				// productos.add(result);
-				// adapter.notifyDataSetChanged();
 
-				separar(result);
-				//
-				// Toast.makeText(getApplicationContext(),
-				// articulo, Toast.LENGTH_LONG).show();
-				// Toast.makeText(getApplicationContext(),
-				// precio, Toast.LENGTH_LONG).show();
+				String resul = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
+						+ "<etiqueta>"
+						+ "<nombre>Televisor Led Sony.</nombre>"
+						+ "<precio>900000</precio>"
+						+ "<url>http://www.sony.com.co/electronics/televisores/w950b-series</url>"
+						+ "</etiqueta>";
 
-				// DocumentBuilderFactory dbf =
-				// DocumentBuilderFactory.newInstance();
-				// DocumentBuilder db;
-				// try {
-				// db = dbf.newDocumentBuilder();
-				// } catch (ParserConfigurationException e) {
-				// // TODO Auto-generated catch block
-				// e.printStackTrace();
-				// }
-				// ByteArrayInputStream bis = new
-				// ByteArrayInputStream(result.getBytes());
-				// org.w3c.dom.Document doc;
-				// try {
-				// doc = db.parse(bis);
-				// } catch (SAXException e) {
-				// // TODO Auto-generated catch block
-				// e.printStackTrace();
-				// } catch (IOException e) {
-				// // TODO Auto-generated catch block
-				// e.printStackTrace();
-				// }
-				// Node n = doc.getFirstChild();
-				// System.out.print(innerXml(n));
-				// }
-				//
-				//
-				//
-				// }
-				//
-				// public String innerXml(Node node) {
-				// DOMImplementationLS lsImpl =
-				// (DOMImplementationLS)node.getOwnerDocument().getImplementation().getFeature("LS",
-				// "3.0");
-				// LSSerializer lsSerializer = lsImpl.createLSSerializer();
-				// NodeList childNodes = node.getChildNodes();
-				// StringBuilder sb = new StringBuilder();
-				// for (int i = 0; i < childNodes.getLength(); i++) {
-				// sb.append(lsSerializer.writeToString(childNodes.item(i)));
-				// }
-				// return sb.toString();
-			}
+				XMLClass xml = new XMLClass(resul);
+
+				Producto prod = xml.buildObject();
+				prod.printAtributes();
+
+				if (validateProduct(prod))
+					prod.sumarCantidad();
+
+				else {
+					products.add(prod);
+					// productos.add(prod.getNombre());
+					adapter.notifyDataSetChanged();
+				}
+				cambiarSaldo(prod.getPrecio());
+
+			} else
+				Toast.makeText(getApplicationContext(), "Etiqueta No Válida",
+						Toast.LENGTH_LONG).show();
 
 		}
 
-		public void separar(String result) {
-			StringTokenizer tokens = new StringTokenizer(result, ".");
+		public boolean validateProduct(Producto producto) {
+			// Si el producto ya existe retorna verdadero
+			for (int i = 0; i < products.size(); i++) {
+				if (producto.getNombre().equalsIgnoreCase(
+						products.get(i).getNombre())) {
+					products.get(i).sumarCantidad();
+					products.get(i).sumarTotal(products.get(i).getPrecio());
+					adapter.notifyDataSetChanged();
+					return true;
 
-			articulo = tokens.nextToken();
-			precio = Integer.parseInt(tokens.nextToken());
-			pagar += precio;
-			productos.add(articulo);
-			adapter.notifyDataSetChanged();
-			cambiarSaldo();
+				}
+			}
+
+			return false;
 		}
 
 	}
 
-	public void cambiarSaldo() {
+	public void cambiarSaldo(int pag) {
+		pagar += pag;
 		saldo.setText("$ " + Integer.toString(pagar));
 
 	}
