@@ -49,7 +49,6 @@ public class MainActivity extends Activity {
 	private NfcAdapter mNfcAdapter;
 	private Button boton;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -61,25 +60,43 @@ public class MainActivity extends Activity {
 
 		products = new ArrayList<Producto>();
 		Producto p1 = new Producto("telefono", 50000, "www.123.com");
-		p1.setCantidad(20);
+		p1.setCantidad(0);
 		products.add(p1);
 
-		Producto p2 = new Producto("Camara Digital", 350000, "www.123.com");
-		p2.setCantidad(5);
+		Producto p2 = new Producto("Camara Digital", 350000,
+				"https://www.google.com.co/");
+		p2.setCantidad(0);
 		products.add(p2);
 
-		Producto p3 = new Producto("Portatil Toshiba", 1800000, "www.123.com");
-		p3.setCantidad(2);
+		Producto p3 = new Producto("Portatil Toshiba", 1800000,
+				"https://www.google.com.co/");
+		p3.setCantidad(0);
 		products.add(p3);
 
-		Producto p4 = new Producto("Audifonos Bluetooth", 120000, "www.123.com");
-		p4.setCantidad(3);
+		Producto p4 = new Producto("Audifonos Bluetooth", 120000,
+				"https://www.google.com.co/");
+		p4.setCantidad(0);
 		products.add(p4);
 
-		Producto p5 = new Producto("Tablet Lenovo", 450000, "www.123.com");
-		p5.setCantidad(4);
+		Producto p5 = new Producto("Tablet Lenovo", 450000,
+				"https://www.google.com.co/");
+		p5.setCantidad(0);
 		products.add(p5);
 
+		Producto p6 = new Producto("Multifuncional", 450000,
+				"https://www.google.com.co/");
+		p6.setCantidad(0);
+		products.add(p6);
+
+		Producto p7 = new Producto("Samsung Galaxy S5", 1250000,
+				"https://www.google.com.co/");
+		p7.setCantidad(0);
+		products.add(p7);
+
+		Producto p8 = new Producto("Guitarra Eléctrica", 1450000,
+				"https://www.google.com.co/");
+		p8.setCantidad(0);
+		products.add(p8);
 		int num = 0;
 		for (int i = 0; i < products.size(); i++) {
 			num = num
@@ -115,6 +132,10 @@ public class MainActivity extends Activity {
 						.sumarTotal(products.get(pos).getPrecio() * -1);
 				cambiarSaldo(products.get(pos).getPrecio() * -1);
 
+				Toast.makeText(getApplicationContext(),
+						"Eliminado " + products.get(pos).getNombre(),
+						Toast.LENGTH_LONG).show();
+
 				if (products.get(pos).getCantidad() == 0)
 					products.remove(pos);
 
@@ -127,6 +148,7 @@ public class MainActivity extends Activity {
 
 		lista.setOnItemClickListener(new OnItemClickListener() {
 
+			@SuppressWarnings("static-access")
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View view, int pos,
 					long arg3) {
@@ -335,23 +357,32 @@ public class MainActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(String result) {
-			System.out.println(result);
+
+			// String cadena = result;
 
 			if (result != null) {
-				Toast.makeText(getApplicationContext(), result,
-						Toast.LENGTH_LONG).show();
+				// Toast.makeText(getApplicationContext(), result,
+				// Toast.LENGTH_LONG).show();
 
-				String resul = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
-						+ "<etiqueta>"
-						+ "<nombre>Televisor Led Sony.</nombre>"
-						+ "<precio>900000</precio>"
-						+ "<url>http://www.sony.com.co/electronics/televisores/w950b-series</url>"
-						+ "</etiqueta>";
+				// String resul = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
+				// + "<etiqueta>"
+				// + "<nombre>Televisor Led Sony.</nombre>"
+				// + "<precio>900000</precio>"
+				// +
+				// "<url>http://www.sony.com.co/electronics/televisores/w950b-series</url>"
+				// + "</etiqueta>";
 
-				XMLClass xml = new XMLClass(resul);
+				System.out.println("NFC" + result);
+				// System.out.println("String" + resul);
+
+				XMLClass xml = new XMLClass(result);
 
 				Producto prod = xml.buildObject();
-				prod.printAtributes();
+				// prod.printAtributes();
+
+				Toast.makeText(getApplicationContext(),
+						"Agregado " + prod.getNombre(), Toast.LENGTH_LONG)
+						.show();
 
 				if (validateProduct(prod))
 					prod.sumarCantidad();
